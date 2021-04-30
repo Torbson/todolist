@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "b75cbed1-9307-4109-9a34-91ed5f2e629b",
+		"name": "todolist",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "POST /todos",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"todolist go REST API\",\n    \"description\" : \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\":[\n        {\n            \"name\" : \"Create Server\",\n            \"description\" : \"Create Server according to specs with go\"\n        },\n        {\n            \"name\" : \"Unittest\",\n            \"description\" : \"Build Unittest for go server\"\n        },\n        {\n            \"name\" : \"Docker\",\n            \"description\" : \"create docker container with go server\"\n        },\n        {\n            \"name\" : \"Postman\",\n            \"description\" : \"create postman test for docker container\"\n        },\n        {\n            \"name\" : \"Documentation\",\n            \"description\" : \"write markdown documentation that describes installation, API, models, dependencies, deployment and so on\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /todos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /todos/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos/1",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /todos/1",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ID\": 1,\n    \"CreatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"UpdatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"DeletedAt\": null,\n    \"name\": \"todolist go REST API finalization\",\n    \"description\": \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\": [\n        {\n            \"name\": \"Continous Integration\",\n            \"description\": \"add automatic unitest before deployment\",\n            \"TodoID\": 1\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/todos/1",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /todos/1",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos/1",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
