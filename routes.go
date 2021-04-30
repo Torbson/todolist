@@ -19,6 +19,7 @@ func getTodos(w http.ResponseWriter, r *http.Request) {
 	// Get todos batch
 	var todos []Todo
 	db.Preload("Tasks").Find(&todos)
+
 	// Response
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	json.NewEncoder(w).Encode(todos)
@@ -28,6 +29,7 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 	// Get Input
 	var todo Todo
 	json.NewDecoder(r.Body).Decode(&todo)
+	// validate JSON input
 	if errs := validator.Validate(todo); errs != nil {
 		w.WriteHeader(http.StatusNotAcceptable)
 		json.NewEncoder(w).Encode(errs)
@@ -43,10 +45,17 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 func getTodo(w http.ResponseWriter, r *http.Request) {
 	// Get Input
 	params := mux.Vars(r)
-	// @TODO validate params
+	// Check input
+	id, err := strconv.ParseUint(params["id"], 10, 0)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
 	// Get todo by id
 	var todo Todo
-	db.Preload("Tasks").First(&todo, params["id"])
+	db.Preload("Tasks").First(&todo, id)
+	// Check todo
 	if 0 == todo.ID {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
@@ -60,29 +69,44 @@ func getTodo(w http.ResponseWriter, r *http.Request) {
 func putTodo(w http.ResponseWriter, r *http.Request) {
 	// Get input
 	params := mux.Vars(r)
-	// @TODO validate params
-	var todo Todo
-	json.NewDecoder(r.Body).Decode(&todo)
-	if errs := validator.Validate(todo); errs != nil {
-		w.WriteHeader(http.StatusNotAcceptable)
-		json.NewEncoder(w).Encode(errs)
-		return
-	}
-	// Check Input
+	// Check input
 	id, err := strconv.ParseUint(params["id"], 10, 0)
 	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
+
+	var todo Todo
+	db.Preload("Tasks").First(&todo, id)
+	// Check todo
+	if 0 == todo.ID {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	if todo.ID != uint(id) {
-		fmt.Println("ID of JSON does not match with resource path!")
+
+	// Get JSON input
+	var todo_update Todo
+	json.NewDecoder(r.Body).Decode(&todo_update)
+	// validate JSON input
+	if errs := validator.Validate(todo_update); errs != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		json.NewEncoder(w).Encode(errs)
+		return
+	}
+	// Check if JSON matches with path
+	if todo_update.ID != uint(id) {
+		fmt.Println("resource path mismatch JSON id!")
 		w.WriteHeader(http.StatusNotAcceptable)
 		return
 	}
 	// Put todo
-	db.Save(&todo)
-	db.Preload("Tasks").First(&todo, params["id"])
+	db.Save(&todo_update)
+
+	// get updated todo
+	db.Preload("Tasks").First(&todo, id)
+
 	// Response
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
@@ -90,12 +114,19 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
-	// Get Input
+	// Get input
 	params := mux.Vars(r)
-	// @TODO validate params
+	// Check input
+	id, err := strconv.ParseUint(params["id"], 10, 0)
+	if err != nil {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusNotAcceptable)
+		return
+	}
 	// Get todo by id
 	var todo Todo
-	db.Preload("Tasks").First(&todo, params["id"])
+	db.Preload("Tasks").First(&todo, id)
+	// Check todo
 	if 0 == todo.ID {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusNotFound)
