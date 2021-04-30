@@ -6,16 +6,16 @@ import (
 
 // MODELS
 type Todo struct {
-	gorm.Model
+	gorm.Model //`json:"-"`
 	//Id           int32     `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`
 	//CreationDate time.Time `json:"creation_date,omitempty"`
 	//DueDate      time.Time `json:"due_date,omitempty"`
-	Tasks []Task `json:"tasks,omitempty"`
+	Tasks []Task `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tasks,omitempty"`
 }
 type Task struct {
-	gorm.Model
+	gorm.Model //`json:"-"`
 	//Id          int32  `json:"id"`
 	Name        string `json:"name"`
 	Description string `json:"description,omitempty"`

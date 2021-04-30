@@ -34,23 +34,6 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(todo)
 }
 
-func deleteTodos(w http.ResponseWriter, r *http.Request) {
-	// Get Input
-	params := mux.Vars(r)
-	// Get todo by id
-	var todo Todo
-	db.Preload("Tasks").First(&todo, params["id"])
-	if 0 == todo.ID {
-		fmt.Println(err)
-		w.WriteHeader(http.StatusNotFound)
-		return
-	}
-	db.Delete(&todo, params["id"])
-	// Response
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(todo)
-}
-
 func getTodo(w http.ResponseWriter, r *http.Request) {
 	// Get Input
 	params := mux.Vars(r)
@@ -89,5 +72,35 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	// Response
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(todo)
+}
+
+func deleteTodo(w http.ResponseWriter, r *http.Request) {
+	// Get Input
+	params := mux.Vars(r)
+	// Get todo by id
+	var todo Todo
+	db.Preload("Tasks").First(&todo, params["id"])
+	if 0 == todo.ID {
+		fmt.Println(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	// Move todo to trash (soft delete)
+	//db.Select("Tasks").Delete(&todo, params["id"]) // soft-delete cascade Tasks
+	db.Delete(&todo, params["id"]) // soft-delete
+	// Response
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	json.NewEncoder(w).Encode(todo)
+}
+
+func deleteTrash(w http.ResponseWriter, r *http.Request) {
+	// Get trash (soft delete) todos
+	var todo []Todo
+	db.Unscoped().Where("deleted_at is NOT NULL").Preload("Tasks").Find(&todo)
+	// empty trash (permanent delete) todos
+	db.Unscoped().Select("Tasks").Delete(&todo)
+	// Response
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	json.NewEncoder(w).Encode(todo)
 }

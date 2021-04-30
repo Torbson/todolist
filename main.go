@@ -36,9 +36,10 @@ func main() {
 	// Route Handlers
 	r.HandleFunc("/", getIndex).Methods("GET")
 	r.HandleFunc("/todos", getTodos).Methods("GET")
+	r.HandleFunc("/todos", deleteTrash).Methods("DELETE")
 	r.HandleFunc("/todos", postTodo).Methods("POST")
 	r.HandleFunc("/todos/{id:[0-9]+}", getTodo).Methods("GET")
 	r.HandleFunc("/todos/{id:[0-9]+}", putTodo).Methods("PUT")
-	r.HandleFunc("/todos/{id:[0-9]+}", deleteTodos).Methods("DELETE")
+	r.HandleFunc("/todos/{id:[0-9]+}", deleteTodo).Methods("DELETE")
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
