@@ -7,6 +7,43 @@
 	"item": [
 		{
 			"name": "POST /todos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response has ID\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check id",
+							"    pm.expect(json.ID).to.be.a('number');",
+							"    //store id for further tests",
+							"    pm.collectionVariables.set(\"todo_1_id\", json.ID);",
+							"});",
+							"pm.test(\"The response has name\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check name",
+							"    pm.expect(json.name).to.be.a('string');",
+							"    pm.expect(json.name).to.eql('todolist go REST API');",
+							"});",
+							"pm.test(\"The response has 5 tasks\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check tasks",
+							"    pm.expect(json.tasks).to.have.lengthOf(5);",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -32,7 +69,92 @@
 			"response": []
 		},
 		{
-			"name": "GET /todos",
+			"name": "POST /todos 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response has ID\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check id",
+							"    pm.expect(json.ID).to.be.a('number');",
+							"    pm.collectionVariables.set(\"todo_2_id\", json.ID);",
+							"});",
+							"pm.test(\"The response has name\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check name",
+							"    pm.expect(json.name).to.be.a('string');",
+							"    pm.expect(json.name).to.eql('todolist go REST API');",
+							"});",
+							"pm.test(\"The response has 5 tasks\", () => {",
+							"    //parse the response",
+							"    const json = pm.response.json();",
+							"    //check tasks",
+							"    pm.expect(json.tasks).to.have.lengthOf(5);",
+							"});",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"todolist go REST API\",\n    \"description\" : \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\":[\n        {\n            \"name\" : \"Create Server\",\n            \"description\" : \"Create Server according to specs with go\"\n        },\n        {\n            \"name\" : \"Unittest\",\n            \"description\" : \"Build Unittest for go server\"\n        },\n        {\n            \"name\" : \"Docker\",\n            \"description\" : \"create docker container with go server\"\n        },\n        {\n            \"name\" : \"Postman\",\n            \"description\" : \"create postman test for docker container\"\n        },\n        {\n            \"name\" : \"Documentation\",\n            \"description\" : \"write markdown documentation that describes installation, API, models, dependencies, deployment and so on\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /todos 1 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes todo 1 & 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_1_json);",
+							"    //partial JSON check with collection variable todo_2_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_2_json);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -50,17 +172,95 @@
 		},
 		{
 			"name": "GET /todos/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes todo 1\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_1_json);",
+							"});",
+							"pm.test(\"The response has ID\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check id",
+							"    pm.expect(json.ID).to.be.a('number');",
+							"    pm.expect(json.ID).to.eql(pm.collectionVariables.get(\"todo_1_id\"));",
+							"});",
+							"pm.test(\"The response has name\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check name",
+							"    pm.expect(json.name).to.be.a('string');",
+							"    pm.expect(json.name).to.eql('todolist go REST API');",
+							"});",
+							"pm.test(\"The response has 5 tasks\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check tasks",
+							"    pm.expect(json.tasks).to.have.lengthOf(5);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos/1",
+					"raw": "{{domain}}/todos/{{todo_1_id}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
-						"1"
+						"{{todo_1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /todos/2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes todo 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_2_json);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos/{{todo_2_id}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos",
+						"{{todo_2_id}}"
 					]
 				}
 			},
@@ -68,12 +268,52 @@
 		},
 		{
 			"name": "PUT /todos/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes updated todo 1\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_1_json);",
+							"});",
+							"pm.test(\"The response has ID\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check id",
+							"    pm.expect(json.ID).to.be.a('number');",
+							"    pm.expect(json.ID).to.eql(pm.collectionVariables.get(\"todo_1_id\"));",
+							"});",
+							"pm.test(\"The response has updated name\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check name",
+							"    pm.expect(json.name).to.be.a('string');",
+							"    pm.expect(json.name).to.eql('todolist go REST API finalization');",
+							"});",
+							"pm.test(\"The response has now 6 tasks\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check tasks",
+							"    pm.expect(json.tasks).to.have.lengthOf(6);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"ID\": 1,\n    \"CreatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"UpdatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"DeletedAt\": null,\n    \"name\": \"todolist go REST API finalization\",\n    \"description\": \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\": [\n        {\n            \"name\": \"Continous Integration\",\n            \"description\": \"add automatic unitest before deployment\",\n            \"TodoID\": 1\n        }\n    ]\n}",
+					"raw": "{\n    \"ID\": {{todo_1_id}},\n    \"CreatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"UpdatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"DeletedAt\": null,\n    \"name\": \"todolist go REST API finalization\",\n    \"description\": \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\": [\n        {\n            \"name\": \"Continous Integration\",\n            \"description\": \"add automatic unitest before deployment\",\n            \"TodoID\": 1\n        }\n    ]\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -81,13 +321,171 @@
 					}
 				},
 				"url": {
-					"raw": "{{domain}}/todos/1",
+					"raw": "{{domain}}/todos/{{todo_1_id}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
-						"1"
+						"{{todo_1_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /todos/2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes updated todo 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_2_json);",
+							"});",
+							"pm.test(\"The response has ID\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check id",
+							"    pm.expect(json.ID).to.be.a('number');",
+							"    pm.expect(json.ID).to.eql(pm.collectionVariables.get(\"todo_2_id\"));",
+							"});",
+							"pm.test(\"The response has updated name\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check name",
+							"    pm.expect(json.name).to.be.a('string');",
+							"    pm.expect(json.name).to.eql('todolist go REST API finalization');",
+							"});",
+							"pm.test(\"The response has now 6 tasks\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check tasks",
+							"    pm.expect(json.tasks).to.have.lengthOf(6);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"ID\": {{todo_2_id}},\n    \"CreatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"UpdatedAt\": \"2021-04-30T00:00:21.093101+02:00\",\n    \"DeletedAt\": null,\n    \"name\": \"todolist go REST API finalization\",\n    \"description\": \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\": [\n        {\n            \"name\": \"Continous Integration\",\n            \"description\": \"add automatic unitest before deployment\",\n            \"TodoID\": 1\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/todos/{{todo_2_id}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos",
+						"{{todo_2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /todos (trash empty)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response not includes todo 1 & 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.not.include(todo_1_json);",
+							"    //partial JSON check with collection variable todo_2_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.not.include(todo_2_json);",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"todolist go REST API\",\n    \"description\" : \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\":[\n        {\n            \"name\" : \"Create Server\",\n            \"description\" : \"Create Server according to specs with go\"\n        },\n        {\n            \"name\" : \"Unittest\",\n            \"description\" : \"Build Unittest for go server\"\n        },\n        {\n            \"name\" : \"Docker\",\n            \"description\" : \"create docker container with go server\"\n        },\n        {\n            \"name\" : \"Postman\",\n            \"description\" : \"create postman test for docker container\"\n        },\n        {\n            \"name\" : \"Documentation\",\n            \"description\" : \"write markdown documentation that describes installation, API, models, dependencies, deployment and so on\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /todos 1 2 again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes todo 1 & 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_1_json);",
+							"    //partial JSON check with collection variable todo_2_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_2_json);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
 					]
 				}
 			},
@@ -95,21 +493,274 @@
 		},
 		{
 			"name": "DELETE /todos/1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes todo 1\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_1_json);",
+							"});",
+							"pm.test(\"The response has ID\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check id",
+							"    pm.expect(json.ID).to.be.a('number');",
+							"    pm.expect(json.ID).to.eql(pm.collectionVariables.get(\"todo_1_id\"));",
+							"});",
+							"pm.test(\"The response has name\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check name",
+							"    pm.expect(json.name).to.be.a('string');",
+							"    pm.expect(json.name).to.eql('todolist go REST API finalization');",
+							"});",
+							"pm.test(\"The response has 6 tasks\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check tasks",
+							"    pm.expect(json.tasks).to.have.lengthOf(6);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos/1",
+					"raw": "{{domain}}/todos/{{todo_1_id}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
-						"1"
+						"{{todo_1_id}}"
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GET /todos 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response not includes todo 1\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.not.include(todo_1_json);",
+							"});",
+							"pm.test(\"The response includes todo 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_2_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_2_json);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /todos/2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes todo 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_2_json);",
+							"});",
+							"pm.test(\"The response has ID\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check id",
+							"    pm.expect(json.ID).to.be.a('number');",
+							"    pm.expect(json.ID).to.eql(pm.collectionVariables.get(\"todo_2_id\"));",
+							"});",
+							"pm.test(\"The response has name\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check name",
+							"    pm.expect(json.name).to.be.a('string');",
+							"    pm.expect(json.name).to.eql('todolist go REST API finalization');",
+							"});",
+							"pm.test(\"The response has 6 tasks\", () => {",
+							"    //parse the response json",
+							"    const json = pm.response.json();",
+							"    //check tasks",
+							"    pm.expect(json.tasks).to.have.lengthOf(6);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos/{{todo_2_id}}",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos",
+						"{{todo_2_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /todos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response not includes todo 1\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.not.include(todo_1_json);",
+							"});",
+							"pm.test(\"The response not includes todo 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_2_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.not.include(todo_2_json);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE /todos",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"Status code is 200\", function () {",
+							"  pm.response.to.have.status(200);",
+							"});",
+							"pm.test(\"The response includes todo 1 & 2\", () => {",
+							"    //parse the response text with JSON",
+							"    let text = pm.response.text()",
+							"    //partial JSON check with collection variable todo_1_id",
+							"    let todo_1_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_1_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_1_json);",
+							"    //partial JSON check with collection variable todo_2_id",
+							"    let todo_2_json = '{\"ID\":'+pm.collectionVariables.get(\"todo_2_id\")+',\"name\":\"todolist go REST API finalization\",\"description\":\"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\"tasks\":[{'",
+							"    pm.expect(text).to.include(todo_2_json);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\" : \"todolist go REST API\",\n    \"description\" : \"write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks\",\n    \"tasks\":[\n        {\n            \"name\" : \"Create Server\",\n            \"description\" : \"Create Server according to specs with go\"\n        },\n        {\n            \"name\" : \"Unittest\",\n            \"description\" : \"Build Unittest for go server\"\n        },\n        {\n            \"name\" : \"Docker\",\n            \"description\" : \"create docker container with go server\"\n        },\n        {\n            \"name\" : \"Postman\",\n            \"description\" : \"create postman test for docker container\"\n        },\n        {\n            \"name\" : \"Documentation\",\n            \"description\" : \"write markdown documentation that describes installation, API, models, dependencies, deployment and so on\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/todos",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"todos"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "todo_id",
+			"value": ""
+		},
+		{
+			"key": "todo_1_id",
+			"value": ""
+		},
+		{
+			"key": "todo_2_id",
+			"value": ""
 		}
 	]
 }

@@ -69,6 +69,7 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	}
 	// Put todo
 	db.Save(&todo)
+	db.Preload("Tasks").First(&todo, params["id"])
 	// Response
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)

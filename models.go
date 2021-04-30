@@ -1,25 +1,35 @@
 package main
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
 // MODELS
 type Todo struct {
-	gorm.Model //`json:"-"`
-	//Id           int32     `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
+	//gorm.Model //`json:"-"`
+	//Id           int32       `json:"id"`
+	ID          uint           `gorm:"primaryKey"`
+	CreatedAt   time.Time      `json:"-"`
+	UpdatedAt   time.Time      `json:"-"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
+	Name        string         `json:"name"`
+	Description string         `json:"description,omitempty"`
 	//CreationDate time.Time `json:"creation_date,omitempty"`
 	//DueDate      time.Time `json:"due_date,omitempty"`
 	Tasks []Task `gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;" json:"tasks,omitempty"`
 }
 type Task struct {
-	gorm.Model //`json:"-"`
+	//gorm.Model //`json:"-"`
 	//Id          int32  `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description,omitempty"`
-	TodoID      uint
+	ID          uint           `gorm:"primaryKey"`
+	CreatedAt   time.Time      `json:"-"`
+	UpdatedAt   time.Time      `json:"-"`
+	DeletedAt   gorm.DeletedAt `gorm:"index" json:"-"`
+	Name        string         `json:"name"`
+	Description string         `json:"description,omitempty"`
+	TodoID      uint           `json:"-"`
 	//Duration string `json:"duration,omitempty"`
 	//Items []Item `json:"items,omitempty"`
 }
