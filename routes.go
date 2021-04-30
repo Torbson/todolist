@@ -10,6 +10,20 @@ import (
 	"gopkg.in/validator.v2"
 )
 
+// Router
+func muxRouter() http.Handler {
+	// Create Router
+	r := mux.NewRouter()
+	r.HandleFunc("/", getIndex).Methods("GET")
+	r.HandleFunc("/todos", getTodos).Methods("GET")
+	r.HandleFunc("/todos", deleteTrash).Methods("DELETE")
+	r.HandleFunc("/todos", postTodo).Methods("POST")
+	r.HandleFunc("/todos/{id:[0-9]+}", getTodo).Methods("GET")
+	r.HandleFunc("/todos/{id:[0-9]+}", putTodo).Methods("PUT")
+	r.HandleFunc("/todos/{id:[0-9]+}", deleteTodo).Methods("DELETE")
+	return r
+}
+
 // ROUTES
 func getIndex(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/todos", http.StatusMovedPermanently)
@@ -73,7 +87,7 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(params["id"], 10, 0)
 	if err != nil {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusNotAcceptable)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
@@ -91,14 +105,14 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&todo_update)
 	// validate JSON input
 	if errs := validator.Validate(todo_update); errs != nil {
-		w.WriteHeader(http.StatusNotAcceptable)
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errs)
 		return
 	}
 	// Check if JSON matches with path
 	if todo_update.ID != uint(id) {
 		fmt.Println("resource path mismatch JSON id!")
-		w.WriteHeader(http.StatusNotAcceptable)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	// Put todo
@@ -120,7 +134,7 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(params["id"], 10, 0)
 	if err != nil {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusNotAcceptable)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	// Get todo by id
