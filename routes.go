@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"gopkg.in/validator.v2"
 )
 
 // ROUTES
@@ -27,6 +28,11 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 	// Get Input
 	var todo Todo
 	json.NewDecoder(r.Body).Decode(&todo)
+	if errs := validator.Validate(todo); errs != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		json.NewEncoder(w).Encode(errs)
+		return
+	}
 	// Post todo
 	db.Create(&todo)
 	// Response
@@ -37,6 +43,7 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 func getTodo(w http.ResponseWriter, r *http.Request) {
 	// Get Input
 	params := mux.Vars(r)
+	// @TODO validate params
 	// Get todo by id
 	var todo Todo
 	db.Preload("Tasks").First(&todo, params["id"])
@@ -53,8 +60,14 @@ func getTodo(w http.ResponseWriter, r *http.Request) {
 func putTodo(w http.ResponseWriter, r *http.Request) {
 	// Get input
 	params := mux.Vars(r)
+	// @TODO validate params
 	var todo Todo
 	json.NewDecoder(r.Body).Decode(&todo)
+	if errs := validator.Validate(todo); errs != nil {
+		w.WriteHeader(http.StatusNotAcceptable)
+		json.NewEncoder(w).Encode(errs)
+		return
+	}
 	// Check Input
 	id, err := strconv.ParseUint(params["id"], 10, 0)
 	if err != nil {
@@ -79,6 +92,7 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
 	// Get Input
 	params := mux.Vars(r)
+	// @TODO validate params
 	// Get todo by id
 	var todo Todo
 	db.Preload("Tasks").First(&todo, params["id"])
