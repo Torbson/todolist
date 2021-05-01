@@ -26,19 +26,24 @@ func connect_db(dsn string) {
 	db.AutoMigrate(&Todo{}, &Task{})
 }
 
-// MAIN
-func main() {
+func check_env() {
 	// check env
-	var env string
-	env = os.Getenv("ENV")
+	env := os.Getenv("ENV")
 	// if env variable is not set load environment from .env file
 	if "there" != env {
 		// load env
+		log.Print("load env")
 		err := godotenv.Load()
 		if err != nil {
 			log.Fatal("Error loading .env file")
 		}
 	}
+}
+
+// MAIN
+func main() {
+	// check env
+	check_env()
 	// get env
 	psql_user := os.Getenv("POSTGRES_USER")
 	psql_pw := os.Getenv("POSTGRES_PASSWORD")
