@@ -45,7 +45,7 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&todo)
 	// validate JSON input
 	if errs := validator.Validate(todo); errs != nil {
-		w.WriteHeader(http.StatusNotAcceptable)
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errs)
 		return
 	}
@@ -63,7 +63,7 @@ func getTodo(w http.ResponseWriter, r *http.Request) {
 	id, err := strconv.ParseUint(params["id"], 10, 0)
 	if err != nil {
 		fmt.Println(err)
-		w.WriteHeader(http.StatusNotAcceptable)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	// Get todo by id

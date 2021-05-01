@@ -15,8 +15,7 @@ const dsn = "host=localhost user=postgres password=PostgresTest dbname=todolist 
 var db *gorm.DB
 var err error
 
-// MAIN
-func main() {
+func init_db(dsn string) {
 	// Init PostgreSQL
 	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -25,6 +24,11 @@ func main() {
 	}
 	// Auto migrate in case of schema / model changes
 	db.AutoMigrate(&Todo{}, &Task{})
+}
+
+// MAIN
+func main() {
+	init_db(dsn)
 
 	// Start server
 	log.Fatal(http.ListenAndServe(":8000", muxRouter()))
