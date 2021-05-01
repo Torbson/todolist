@@ -4,9 +4,13 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
+
+	"github.com/joho/godotenv"
 )
 
 type TestStruct struct {
@@ -32,8 +36,23 @@ func Test_Router(t *testing.T) {
 		{name: "GET /", input: TestInput{method: http.MethodGet, path: "/", content: nil}, output: TestOutput{status: http.StatusOK}},
 		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos", content: nil}, output: TestOutput{status: http.StatusOK}},
 		{name: "POST /todos WITHOUT JSON", input: TestInput{method: http.MethodPost, path: "/todos", content: nil}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos", input: TestInput{method: http.MethodPost, path: "/todos", content: nil}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos", input: TestInput{method: http.MethodPost, path: "/todos", content: nil}, output: TestOutput{status: http.StatusOK}},
 	}
-	init_db("host=localhost user=postgres password=PostgresTest dbname=todolist_test port=5432")
+	// get environment
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	// Connect to database
+	psql_user := os.Getenv("POSTGRES_USER")
+	psql_pw := os.Getenv("POSTGRES_PASSWORD")
+	psql_db := os.Getenv("POSTGRES_DB")
+	psql_host := os.Getenv("POSTGRES_HOST")
+	psql_port := os.Getenv("POSTGRES_PORT")
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s_test port=%s", psql_host, psql_user, psql_pw, psql_db, psql_port)
+	connect_db(dsn)
+	connect_db("host=localhost user=postgres password=PostgresTest dbname=todolist_test port=5432")
 	srv := httptest.NewServer(muxRouter())
 	client := srv.Client()
 	defer srv.Close()
