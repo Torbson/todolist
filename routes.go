@@ -120,13 +120,13 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	// Put todo
 	db.Save(&todo_update)
 
-	// get updated todo
-	db.Preload("Tasks").First(&todo, id)
-
 	// Response
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
+	// get updated todo
+	db.Preload("Tasks").First(&todo, id)
 	json.NewEncoder(w).Encode(todo)
+
 }
 
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
