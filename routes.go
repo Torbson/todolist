@@ -46,6 +46,7 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 	// validate JSON input
 	if errs := validator.Validate(todo); errs != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		json.NewEncoder(w).Encode(errs)
 		return
 	}
@@ -106,6 +107,7 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	// validate JSON input
 	if errs := validator.Validate(todo_update); errs != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		json.NewEncoder(w).Encode(errs)
 		return
 	}

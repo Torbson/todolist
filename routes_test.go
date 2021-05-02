@@ -1,14 +1,21 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 )
+
+type Todos struct {
+	Todos []Todo
+}
 
 type TestStruct struct {
 	name   string
@@ -20,7 +27,7 @@ type TestInput struct {
 	method      string
 	path        string
 	contentType string
-	content     io.Reader
+	content     string
 }
 type TestOutput struct {
 	status      int
@@ -30,9 +37,10 @@ type TestOutput struct {
 
 func Test_Router(t *testing.T) {
 	tests := []TestStruct{
-		{name: "GET /", input: TestInput{method: http.MethodGet, path: "/", content: nil}, output: TestOutput{status: http.StatusOK}},
-		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos", content: nil}, output: TestOutput{status: http.StatusOK}},
-		{name: "POST /todos WITHOUT JSON", input: TestInput{method: http.MethodPost, path: "/todos", content: nil}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "GET /", input: TestInput{method: http.MethodGet, path: "/", content: ""}, output: TestOutput{status: http.StatusOK}},
+		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos", content: ""}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos", input: TestInput{method: http.MethodPost, path: "/todos", content: ""}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos WITHOUT JSON", input: TestInput{method: http.MethodPost, path: "/todos", content: json_todo1_post}, output: TestOutput{status: http.StatusOK}},
 	}
 	// check env
 	check_env()
@@ -49,8 +57,13 @@ func Test_Router(t *testing.T) {
 	client := srv.Client()
 	defer srv.Close()
 	for i, test := range tests {
+		var body io.Reader
+		body = nil
+		if 0 < len(test.input.content) {
+			body = strings.NewReader(test.input.content)
+		}
 		//create request based on test table entry
-		req, err := http.NewRequest(test.input.method, fmt.Sprintf("%s%s", srv.URL, test.input.path), test.input.content)
+		req, err := http.NewRequest(test.input.method, fmt.Sprintf("%s%s", srv.URL, test.input.path), body)
 		if err != nil {
 			t.Fatalf("create request error: %v", err)
 		}
@@ -72,16 +85,49 @@ func Test_Router(t *testing.T) {
 		// content expected?
 		if 0 < len(test.output.content) {
 			// get content
-			body, err := ioutil.ReadAll(r.Body)
-			content := string(body)
+			content, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				t.Fatalf("get response body error: %v", err)
 			}
+			// get expected content
+			expected := new(bytes.Buffer)
+			err = json.Compact(expected, []byte(test.output.content))
+			if err != nil {
+				fmt.Println(err)
+			}
 			// check content
-			if test.output.content != content {
-				t.Errorf("expected content: %v; got %v", test.output.content, content)
+			if !bytes.Contains(content, expected.Bytes()) {
+				t.Errorf("expected content: %v; got %v", content, expected.Bytes())
 			}
 		}
-		t.Logf("Test_Router tabbletest: %d, status: SUCCESS, name: %s", i, test.name)
+		t.Logf("Test_Router tabbletest: %d, name: %s", i, test.name)
 	}
 }
+
+var json_todo1_post string = `
+{
+	"name" : "todolist go REST API",
+	"description" : "write a REST API in go for a simple todo list. Each todo can have multiple subtodos called tasks",	
+    "tasks":[
+        {
+            "name" : "Create Server",
+            "description" : "Create Server according to specs with go"
+        },
+        {
+            "name" : "Unittest",
+            "description" : "Build Unittest for go server"
+        },
+        {
+            "name" : "Docker",
+            "description" : "create docker container with go server"
+        },
+        {
+            "name" : "Postman",
+            "description" : "create postman test for docker container"
+        },
+        {
+            "name" : "Documentation",
+            "description" : "write markdown documentation that describes installation, API, models, dependencies, deployment and so on"
+        }
+    ]
+}`
