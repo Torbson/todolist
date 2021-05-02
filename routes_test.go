@@ -37,11 +37,22 @@ type TestOutput struct {
 
 func Test_Router(t *testing.T) {
 	tests := []TestStruct{
-		{name: "GET /", input: TestInput{method: http.MethodGet, path: "/", content: ""}, output: TestOutput{status: http.StatusOK}},
-		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos", content: ""}, output: TestOutput{status: http.StatusOK}},
-		{name: "POST /todos", input: TestInput{method: http.MethodPost, path: "/todos", content: ""}, output: TestOutput{status: http.StatusBadRequest}},
-		{name: "POST /todos WITHOUT JSON", input: TestInput{method: http.MethodPost, path: "/todos", content: json_todo1_post}, output: TestOutput{status: http.StatusOK}},
+		{name: "GET /", input: TestInput{method: http.MethodGet, path: "/"}, output: TestOutput{status: http.StatusOK}},
+		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos"}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos", input: TestInput{method: http.MethodPost, path: "/todos", content: json_todo1_post}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos only name", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name" : "minimal requirements"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos without JSON", input: TestInput{method: http.MethodPost, path: "/todos"}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos without name", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"description" : "name required"}`}, output: TestOutput{status: http.StatusBadRequest}},
 	}
+	/*
+		r.HandleFunc("/", getIndex).Methods("GET")
+		r.HandleFunc("/todos", getTodos).Methods("GET")
+		r.HandleFunc("/todos", postTodo).Methods("POST")
+		r.HandleFunc("/todos", deleteTrash).Methods("DELETE")
+		r.HandleFunc("/todos/{id:[0-9]+}", getTodo).Methods("GET")
+		r.HandleFunc("/todos/{id:[0-9]+}", putTodo).Methods("PUT")
+		r.HandleFunc("/todos/{id:[0-9]+}", deleteTodo).Methods("DELETE")
+	*/
 	// check env
 	check_env()
 	// get env
