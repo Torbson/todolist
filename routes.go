@@ -50,6 +50,22 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(errs)
 		return
 	}
+
+	//check if ids are set in todo
+	if 0 != todo.ID {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	// check if ids are set in todo.Tasks
+	if nil != todo.Tasks {
+		for _, task := range todo.Tasks {
+			if 0 != task.ID {
+				w.WriteHeader(http.StatusBadRequest)
+				return
+			}
+		}
+	}
+
 	// Post todo
 	db.Create(&todo)
 	// Response
@@ -126,7 +142,6 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	// get updated todo
 	db.Preload("Tasks").First(&todo, id)
 	json.NewEncoder(w).Encode(todo)
-
 }
 
 func deleteTodo(w http.ResponseWriter, r *http.Request) {
@@ -158,11 +173,11 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 
 func deleteTrash(w http.ResponseWriter, r *http.Request) {
 	// Get trash (soft delete) todos
-	var todo []Todo
-	db.Unscoped().Where("deleted_at is NOT NULL").Preload("Tasks").Find(&todo)
+	var todos []Todo
+	db.Unscoped().Where("deleted_at is NOT NULL").Preload("Tasks").Find(&todos)
 	// empty trash (permanent delete) todos
-	db.Unscoped().Select("Tasks").Delete(&todo)
+	db.Unscoped().Select("Tasks").Delete(&todos)
 	// Response
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	json.NewEncoder(w).Encode(todo)
+	json.NewEncoder(w).Encode(todos)
 }
