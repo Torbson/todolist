@@ -1,8 +1,6 @@
 build:
   docker:
     web: Dockerfile
-    worker: todolist/Dockerfile
-
   config:
     ENV: there
     POSTGRES_USER: gweshgnedfhbja
@@ -12,6 +10,5 @@ build:
     POSTGRES_PORT: 5432
 
 release:
-  image: todolist
   command:
     - go test
