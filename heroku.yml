@@ -1,6 +1,7 @@
 build:
   docker:
     web: Dockerfile
+    worker: todolist/Dockerfile
 
   config:
     ENV: there
@@ -9,3 +10,8 @@ build:
     POSTGRES_DB: d45omspb4mfdkf
     POSTGRES_HOST: ec2-54-78-36-245.eu-west-1.compute.amazonaws.com
     POSTGRES_PORT: 5432
+
+release:
+  image: todolist
+  command:
+    - go test
