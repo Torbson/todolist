@@ -45,17 +45,19 @@ func main() {
 	// check env
 	check_env()
 	// get env
+	port := os.Getenv("PORT")
 	psql_user := os.Getenv("POSTGRES_USER")
 	psql_pw := os.Getenv("POSTGRES_PASSWORD")
 	psql_db := os.Getenv("POSTGRES_DB")
 	psql_host := os.Getenv("POSTGRES_HOST")
 	psql_port := os.Getenv("POSTGRES_PORT")
+
 	// Connect to database
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", psql_host, psql_user, psql_pw, psql_db, psql_port)
 	connect_db(dsn)
 
 	// Start http server
-	log.Fatal(http.ListenAndServe(":8000", muxRouter()))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), muxRouter()))
 
 	// golang TLS config
 	/*

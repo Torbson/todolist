@@ -13,6 +13,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/todolist
 
 FROM scratch as production
 ENV ENV=there
+ENV PORT=8000
 ENV POSTGRES_USER=gweshgnedfhbja
 ENV POSTGRES_PASSWORD=c68ccf60efdc5f5e8d1bb9cfe3635d49df9979cd7127c032b8921f7bf543744c
 ENV POSTGRES_DB=d45omspb4mfdkf

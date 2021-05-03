@@ -1,4 +1,4 @@
-module todolist.chefkoch.de
+module todolist
 
 go 1.16
 
