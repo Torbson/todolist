@@ -57,12 +57,18 @@
 					}
 				},
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -119,12 +125,18 @@
 					}
 				},
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -159,12 +171,18 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -216,13 +234,19 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos/{{todo_1_id}}",
+					"raw": "{{domain}}/todos/{{todo_1_id}}?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
 						"{{todo_1_id}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -274,13 +298,19 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos/{{todo_2_id}}",
+					"raw": "{{domain}}/todos/{{todo_2_id}}?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
 						"{{todo_2_id}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -341,13 +371,19 @@
 					}
 				},
 				"url": {
-					"raw": "{{domain}}/todos/{{todo_1_id}}",
+					"raw": "{{domain}}/todos/{{todo_1_id}}?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
 						"{{todo_1_id}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -408,13 +444,19 @@
 					}
 				},
 				"url": {
-					"raw": "{{domain}}/todos/{{todo_2_id}}",
+					"raw": "{{domain}}/todos/{{todo_2_id}}?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
 						"{{todo_2_id}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -460,12 +502,18 @@
 					}
 				},
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -500,12 +548,18 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -557,13 +611,19 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos/{{todo_1_id}}",
+					"raw": "{{domain}}/todos/{{todo_1_id}}?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
 						"{{todo_1_id}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -602,12 +662,18 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -659,13 +725,19 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos/{{todo_2_id}}",
+					"raw": "{{domain}}/todos/{{todo_2_id}}?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos",
 						"{{todo_2_id}}"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -704,12 +776,18 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
@@ -757,16 +835,42 @@
 					}
 				},
 				"url": {
-					"raw": "{{domain}}/todos",
+					"raw": "{{domain}}/todos?key={{key}}",
 					"host": [
 						"{{domain}}"
 					],
 					"path": [
 						"todos"
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "{{key}}"
+						}
 					]
 				}
 			},
 			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
 		}
 	],
 	"variable": [
@@ -781,6 +885,10 @@
 		{
 			"key": "todo_2_id",
 			"value": ""
+		},
+		{
+			"key": "key",
+			"value": "hf230Mb36141cm430cmW"
 		}
 	]
 }

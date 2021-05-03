@@ -5,6 +5,7 @@ ENV POSTGRES_PASSWORD=c68ccf60efdc5f5e8d1bb9cfe3635d49df9979cd7127c032b8921f7bf5
 ENV POSTGRES_DB=d45omspb4mfdkf
 ENV POSTGRES_HOST=ec2-54-78-36-245.eu-west-1.compute.amazonaws.com
 ENV POSTGRES_PORT=5432
+ENV TODOLIST_API_KEY=hf230Mb36141cm430cmW
 COPY go.mod go.sum /go/src/git/todolist/
 WORKDIR /go/src/git/todolist/
 RUN go mod download
@@ -19,6 +20,7 @@ ENV POSTGRES_PASSWORD=c68ccf60efdc5f5e8d1bb9cfe3635d49df9979cd7127c032b8921f7bf5
 ENV POSTGRES_DB=d45omspb4mfdkf
 ENV POSTGRES_HOST=ec2-54-78-36-245.eu-west-1.compute.amazonaws.com
 ENV POSTGRES_PORT=5432
+ENV TODOLIST_API_KEY=hf230Mb36141cm430cmW
 COPY --from=builder /go/src/git/todolist/bin/todolist /usr/bin/todolist
 EXPOSE 8000 8000
 ENTRYPOINT ["/usr/bin/todolist"]

@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"strings"
 	"testing"
 )
@@ -35,7 +34,7 @@ type TestOutput struct {
 	content     string
 }
 
-var testCount int = 0
+var testCount int = 1
 
 var json_todo_post string = `
 {
@@ -99,18 +98,8 @@ var json_todo_1941041_post string = `
     ]
 }`
 
-func init_db() {
-	// check env
-	check_env()
-	// get env
-	psql_user := os.Getenv("POSTGRES_USER")
-	psql_pw := os.Getenv("POSTGRES_PASSWORD")
-	psql_db := os.Getenv("POSTGRES_DB")
-	psql_host := os.Getenv("POSTGRES_HOST")
-	psql_port := os.Getenv("POSTGRES_PORT")
-	// Connect to database
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s_test port=%s", psql_host, psql_user, psql_pw, psql_db, psql_port)
-	connect_db(dsn)
+func init_test_db() {
+	connect_db(fmt.Sprintf("%s_test", POSTGRES_DB))
 }
 
 func Test_Router(t *testing.T) {
@@ -129,8 +118,10 @@ func Test_Router(t *testing.T) {
 		{name: "DELETE /todos (trash empty, ignore JSON)", input: TestInput{method: http.MethodDelete, path: "/todos", content: `{"description":"name required"}`}, output: TestOutput{status: http.StatusOK}},
 		{name: "DELETE /todos (trash empty)", input: TestInput{method: http.MethodDelete, path: "/todos"}, output: TestOutput{status: http.StatusOK}},
 	}
+	// get env
+	get_env()
 	//init postgres db
-	init_db()
+	init_test_db()
 	srv := httptest.NewServer(muxRouter())
 	client := srv.Client()
 	defer srv.Close()
@@ -141,7 +132,7 @@ func Test_Router(t *testing.T) {
 			body = strings.NewReader(test.input.content)
 		}
 		//create request based on test table entry
-		req, err := http.NewRequest(test.input.method, fmt.Sprintf("%s%s", srv.URL, test.input.path), body)
+		req, err := http.NewRequest(test.input.method, fmt.Sprintf("%s%s?key=%s", srv.URL, test.input.path, TODOLIST_API_KEY), body)
 		if err != nil {
 			t.Fatalf("create request error: %v", err)
 		}
@@ -156,7 +147,7 @@ func Test_Router(t *testing.T) {
 		if 100 <= test.output.status {
 			// check status code
 			if test.output.status != r.StatusCode {
-				t.Errorf("expected status code: %v; got %v from %s%s", test.output.status, r.StatusCode, srv.URL, test.input.path)
+				t.Errorf("expected status code: %v; got %v", test.output.status, r.StatusCode)
 			}
 		}
 
@@ -185,6 +176,104 @@ func Test_Router(t *testing.T) {
 	}
 }
 
+func Test_Wrong_API_Key(t *testing.T) {
+	tests := []TestStruct{
+		{name: "GET /", input: TestInput{method: http.MethodGet, path: "/"}, output: TestOutput{status: http.StatusOK}},
+		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos"}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (add todo ignore unknown key)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":"check upwards compatibility","unknown unknowns":"ignore until update"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (add todo with name only)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":"check post with name only"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (add todo and ignore id string)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"id":"100","name":"check post with name only"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (bad request with id 1941041)", input: TestInput{method: http.MethodPost, path: "/todos", content: json_todo_1941041_post}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos (bad request without JSON)", input: TestInput{method: http.MethodPost, path: "/todos"}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos (bad request without name)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"description":"name required"}`}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "PUT /todos/1941042 (PUT not found)", input: TestInput{method: http.MethodPut, path: "/todos/1941042", content: `{"id":1941042,"name":"check post with name only"}`}, output: TestOutput{status: http.StatusNotFound}},
+		{name: "DELETE /todos (trash empty, ignore JSON)", input: TestInput{method: http.MethodDelete, path: "/todos", content: `{"description":"name required"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "DELETE /todos (trash empty)", input: TestInput{method: http.MethodDelete, path: "/todos"}, output: TestOutput{status: http.StatusOK}},
+	}
+	// get env
+	get_env()
+	//init postgres db
+	init_test_db()
+	srv := httptest.NewServer(muxRouter())
+	client := srv.Client()
+	defer srv.Close()
+	for _, test := range tests {
+		var body io.Reader
+		body = nil
+		if 0 < len(test.input.content) {
+			body = strings.NewReader(test.input.content)
+		}
+		//create request based on test table entry
+		req, err := http.NewRequest(test.input.method, fmt.Sprintf("%s%s?key=wrongAPIkey", srv.URL, test.input.path), body)
+		if err != nil {
+			t.Fatalf("create request error: %v", err)
+		}
+		// send request
+		r, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("send request error: %v", err)
+		}
+		defer r.Body.Close()
+
+		// check status code
+		if http.StatusUnauthorized != r.StatusCode {
+			t.Errorf("expected status code: %v; got %v", http.StatusUnauthorized, r.StatusCode)
+		}
+
+		t.Logf("Test_Router tabletest: %d, name: %s", testCount, test.name)
+		testCount++
+	}
+}
+
+func Test_Without_API_Key(t *testing.T) {
+	tests := []TestStruct{
+		{name: "GET /", input: TestInput{method: http.MethodGet, path: "/"}, output: TestOutput{status: http.StatusOK}},
+		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos"}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (add todo ignore unknown key)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":"check upwards compatibility","unknown unknowns":"ignore until update"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (add todo with name only)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":"check post with name only"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (add todo and ignore id string)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"id":"100","name":"check post with name only"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (bad request with id 1941041)", input: TestInput{method: http.MethodPost, path: "/todos", content: json_todo_1941041_post}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos (bad request without JSON)", input: TestInput{method: http.MethodPost, path: "/todos"}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos (bad request without name)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"description":"name required"}`}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "PUT /todos/1941042 (PUT not found)", input: TestInput{method: http.MethodPut, path: "/todos/1941042", content: `{"id":1941042,"name":"check post with name only"}`}, output: TestOutput{status: http.StatusNotFound}},
+		{name: "DELETE /todos (trash empty, ignore JSON)", input: TestInput{method: http.MethodDelete, path: "/todos", content: `{"description":"name required"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "DELETE /todos (trash empty)", input: TestInput{method: http.MethodDelete, path: "/todos"}, output: TestOutput{status: http.StatusOK}},
+	}
+	// get env
+	get_env()
+	//init postgres db
+	init_test_db()
+	srv := httptest.NewServer(muxRouter())
+	client := srv.Client()
+	defer srv.Close()
+	for _, test := range tests {
+		var body io.Reader
+		body = nil
+		if 0 < len(test.input.content) {
+			body = strings.NewReader(test.input.content)
+		}
+		//create request based on test table entry
+		req, err := http.NewRequest(test.input.method, fmt.Sprintf("%s%s", srv.URL, test.input.path), body)
+		if err != nil {
+			t.Fatalf("create request error: %v", err)
+		}
+		// send request
+		r, err := client.Do(req)
+		if err != nil {
+			t.Fatalf("send request error: %v", err)
+		}
+		defer r.Body.Close()
+
+		// check status code
+		if http.StatusUnauthorized != r.StatusCode {
+			t.Errorf("expected status code: %v; got %v", http.StatusUnauthorized, r.StatusCode)
+		}
+
+		t.Logf("Test_Router tabletest: %d, name: %s", testCount, test.name)
+		testCount++
+	}
+}
+
 func Test_Post_Todos_With_Id(t *testing.T) {
 	srv := httptest.NewServer(muxRouter())
 	client := srv.Client()
@@ -197,7 +286,7 @@ func Test_Post_Todos_With_Id(t *testing.T) {
 		t.Fatalf("create json error: %v", err)
 	}
 	body := bytes.NewReader(json_content)
-	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/todos", srv.URL), body)
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/todos?key=%s", srv.URL, TODOLIST_API_KEY), body)
 	if err != nil {
 		t.Fatalf("create request error: %v", err)
 	}
@@ -222,7 +311,7 @@ func Test_Post_Todos(t *testing.T) {
 	defer srv.Close()
 	//create request based on json_todo_post
 	json_todo := strings.NewReader(json_todo_post)
-	requ, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/todos", srv.URL), json_todo)
+	requ, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/todos?key=%s", srv.URL, TODOLIST_API_KEY), json_todo)
 	if err != nil {
 		t.Fatalf("create request error: %v", err)
 	}
@@ -274,7 +363,7 @@ func Test_Get_Todo(t *testing.T) {
 	db.Preload("Tasks").Find(&todos)
 	for _, todo := range todos {
 		//create GET request based on todo.id
-		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/todos/%d", srv.URL, todo.ID), nil)
+		req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/todos/%d?key=%s", srv.URL, todo.ID, TODOLIST_API_KEY), nil)
 		if err != nil {
 			t.Fatalf("create request error: %v", err)
 		}
@@ -341,7 +430,7 @@ func Test_Put_Todo(t *testing.T) {
 			t.Fatalf("create json error: %v", err)
 		}
 		body := bytes.NewReader(json_content)
-		req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/todos/%d", srv.URL, todo.ID), body)
+		req, err := http.NewRequest(http.MethodPut, fmt.Sprintf("%s/todos/%d?key=%s", srv.URL, todo.ID, TODOLIST_API_KEY), body)
 		if err != nil {
 			t.Fatalf("create request error: %v", err)
 		}
@@ -410,7 +499,7 @@ func Test_Post_Todo(t *testing.T) {
 			t.Fatalf("create json error: %v", err)
 		}
 		body := bytes.NewReader(json_content)
-		req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/todos/%d", srv.URL, todo.ID), body)
+		req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/todos/%d?key=%s", srv.URL, todo.ID, TODOLIST_API_KEY), body)
 		if err != nil {
 			t.Fatalf("create request error: %v", err)
 		}
@@ -450,7 +539,7 @@ func Test_Patch_Todo(t *testing.T) {
 			t.Fatalf("create json error: %v", err)
 		}
 		body := bytes.NewReader(json_content)
-		req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/todos/%d", srv.URL, todo.ID), body)
+		req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/todos/%d?key=%s", srv.URL, todo.ID, TODOLIST_API_KEY), body)
 		if err != nil {
 			t.Fatalf("create request error: %v", err)
 		}
@@ -482,7 +571,7 @@ func Test_Delete_Todo(t *testing.T) {
 	db.Preload("Tasks").Find(&todos)
 	for _, todo := range todos {
 		//create Delete request based on todo.id
-		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/todos/%d", srv.URL, todo.ID), nil)
+		req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/todos/%d?key=%s", srv.URL, todo.ID, TODOLIST_API_KEY), nil)
 		if err != nil {
 			t.Fatalf("create request error: %v", err)
 		}
@@ -540,7 +629,7 @@ func Test_Delete_Todos(t *testing.T) {
 	var todos []Todo
 	db.Unscoped().Where("deleted_at is NOT NULL").Preload("Tasks").Find(&todos)
 	//create Delete request
-	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/todos", srv.URL), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/todos?key=%s", srv.URL, TODOLIST_API_KEY), nil)
 	if err != nil {
 		t.Fatalf("create request error: %v", err)
 	}

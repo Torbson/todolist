@@ -7,24 +7,26 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
-var db *gorm.DB
+// ENV vars:
+var PORT string
+var POSTGRES_USER string
+var POSTGRES_PASSWORD string
+var POSTGRES_DB string
+var POSTGRES_HOST string
+var POSTGRES_PORT string
+var TODOLIST_API_KEY string
 
-func connect_db(dsn string) {
-	// Connect PostgreSQL
-	log.Print("connect to Postgres ...")
-	var err error
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	if err != nil {
-		fmt.Println(err.Error())
-		panic("failed to connect database")
-	}
-	log.Print("successfully connected to Postgres")
-	// Auto migrate in case of schema / model changes
-	db.AutoMigrate(&Todo{}, &Task{})
+func get_env() {
+	check_env()
+	PORT = os.Getenv("PORT")
+	POSTGRES_USER = os.Getenv("POSTGRES_USER")
+	POSTGRES_PASSWORD = os.Getenv("POSTGRES_PASSWORD")
+	POSTGRES_DB = os.Getenv("POSTGRES_DB")
+	POSTGRES_HOST = os.Getenv("POSTGRES_HOST")
+	POSTGRES_PORT = os.Getenv("POSTGRES_PORT")
+	TODOLIST_API_KEY = os.Getenv("TODOLIST_API_KEY")
 }
 
 func check_env() {
@@ -43,20 +45,12 @@ func check_env() {
 
 // MAIN
 func main() {
-	// check env
-	check_env()
 	// get env
-	port := os.Getenv("PORT")
-	psql_user := os.Getenv("POSTGRES_USER")
-	psql_pw := os.Getenv("POSTGRES_PASSWORD")
-	psql_db := os.Getenv("POSTGRES_DB")
-	psql_host := os.Getenv("POSTGRES_HOST")
-	psql_port := os.Getenv("POSTGRES_PORT")
+	get_env()
 
 	// Connect to database
-	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s", psql_host, psql_user, psql_pw, psql_db, psql_port)
-	connect_db(dsn)
+	connect_db(POSTGRES_DB)
 
 	// Start http server
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", port), muxRouter()))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), muxRouter()))
 }

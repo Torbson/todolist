@@ -14,21 +14,25 @@ import (
 func muxRouter() http.Handler {
 	// Create Router
 	r := mux.NewRouter()
-	r.HandleFunc("/", getIndex).Methods("GET")
-	r.HandleFunc("/todos", getTodos).Methods("GET")
-	r.HandleFunc("/todos", postTodo).Methods("POST")
-	r.HandleFunc("/todos", deleteTrash).Methods("DELETE")
-	r.HandleFunc("/todos/{id:[0-9]+}", getTodo).Methods("GET")
-	r.HandleFunc("/todos/{id:[0-9]+}", putTodo).Methods("PUT")
-	r.HandleFunc("/todos/{id:[0-9]+}", deleteTodo).Methods("DELETE")
+	r.Handle("/", requires_api_key(http.HandlerFunc(getTodos))).Methods("GET")
+	r.Handle("/todos", requires_api_key(http.HandlerFunc(getTodos))).Methods("GET")
+	r.Handle("/todos", requires_api_key(http.HandlerFunc(postTodo))).Methods("POST")
+	r.Handle("/todos", requires_api_key(http.HandlerFunc(deleteTrash))).Methods("DELETE")
+	r.Handle("/todos/{id:[0-9]+}", requires_api_key(http.HandlerFunc(getTodo))).Methods("GET")
+	r.Handle("/todos/{id:[0-9]+}", requires_api_key(http.HandlerFunc(putTodo))).Methods("PUT")
+	r.Handle("/todos/{id:[0-9]+}", requires_api_key(http.HandlerFunc(deleteTodo))).Methods("DELETE")
+	/*
+		r.HandleFunc("/", (getIndex)).Methods("GET")
+		r.HandleFunc("/todos", (getTodos)).Methods("GET")
+		r.HandleFunc("/todos", (postTodo)).Methods("POST")
+		r.HandleFunc("/todos", (deleteTrash)).Methods("DELETE")
+		r.HandleFunc("/todos/{id:[0-9]+}", (getTodo)).Methods("GET")
+		r.HandleFunc("/todos/{id:[0-9]+}", (putTodo)).Methods("PUT")
+		r.HandleFunc("/todos/{id:[0-9]+}", (deleteTodo)).Methods("DELETE")*/
 	return r
 }
 
 // ROUTES
-func getIndex(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/todos", http.StatusMovedPermanently)
-}
-
 func getTodos(w http.ResponseWriter, r *http.Request) {
 	// Get todos batch
 	var todos []Todo
@@ -43,6 +47,10 @@ func postTodo(w http.ResponseWriter, r *http.Request) {
 	// Get Input
 	var todo Todo
 	json.NewDecoder(r.Body).Decode(&todo)
+
+	// sanitize todo strings for html / javascript
+	html_sanitize_todo(&todo)
+
 	// validate JSON input
 	if errs := validator.Validate(todo); errs != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -120,6 +128,9 @@ func putTodo(w http.ResponseWriter, r *http.Request) {
 	// Get JSON input
 	var todo_update Todo
 	json.NewDecoder(r.Body).Decode(&todo_update)
+
+	// sanitize todo strings for html / javascript
+	html_sanitize_todo(&todo_update)
 	// validate JSON input
 	if errs := validator.Validate(todo_update); errs != nil {
 		w.WriteHeader(http.StatusBadRequest)
