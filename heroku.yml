@@ -1,6 +1,8 @@
 build:
   docker:
     web: Dockerfile
+    worker: worker/Dockerfile
+
   config:
     ENV: there
     POSTGRES_USER: gweshgnedfhbja
@@ -10,5 +12,6 @@ build:
     POSTGRES_PORT: 5432
 
 release:
+  image: worker
   command:
     - go test
