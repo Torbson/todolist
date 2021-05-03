@@ -1,0 +1,10 @@
+build:
+  docker:
+    web: Dockerfile
+  config:
+    ENV: there
+    POSTGRES_USER: gweshgnedfhbja
+    POSTGRES_PASSWORD: c68ccf60efdc5f5e8d1bb9cfe3635d49df9979cd7127c032b8921f7bf543744c
+    POSTGRES_DB: d45omspb4mfdkf
+    POSTGRES_HOST: ec2-54-78-36-245.eu-west-1.compute.amazonaws.com
+    POSTGRES_PORT: 5432
