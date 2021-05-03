@@ -1,4 +1,4 @@
-FROM golang:1.14.6-alpine3.12 as builder
+FROM golang:1.14.6-alpine3.12 AS builder
 ENV ENV=there
 ENV POSTGRES_USER=gweshgnedfhbja
 ENV POSTGRES_PASSWORD=c68ccf60efdc5f5e8d1bb9cfe3635d49df9979cd7127c032b8921f7bf543744c
@@ -11,7 +11,7 @@ RUN go mod download
 COPY . /go/src/git/todolist/
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o bin/todolist
 
-FROM scratch as production
+FROM scratch AS production
 ENV ENV=there
 ENV PORT=8000
 ENV POSTGRES_USER=gweshgnedfhbja
