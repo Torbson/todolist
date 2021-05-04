@@ -21,14 +21,6 @@ func muxRouter() http.Handler {
 	r.Handle("/todos/{id:[0-9]+}", requires_api_key(http.HandlerFunc(getTodo))).Methods("GET")
 	r.Handle("/todos/{id:[0-9]+}", requires_api_key(http.HandlerFunc(putTodo))).Methods("PUT")
 	r.Handle("/todos/{id:[0-9]+}", requires_api_key(http.HandlerFunc(deleteTodo))).Methods("DELETE")
-	/*
-		r.HandleFunc("/", (getIndex)).Methods("GET")
-		r.HandleFunc("/todos", (getTodos)).Methods("GET")
-		r.HandleFunc("/todos", (postTodo)).Methods("POST")
-		r.HandleFunc("/todos", (deleteTrash)).Methods("DELETE")
-		r.HandleFunc("/todos/{id:[0-9]+}", (getTodo)).Methods("GET")
-		r.HandleFunc("/todos/{id:[0-9]+}", (putTodo)).Methods("PUT")
-		r.HandleFunc("/todos/{id:[0-9]+}", (deleteTodo)).Methods("DELETE")*/
 	return r
 }
 
@@ -175,7 +167,6 @@ func deleteTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// Move todo to trash (soft delete)
-	//db.Select("Tasks").Delete(&todo, params["id"]) // soft-delete cascade Tasks
 	db.Delete(&todo, params["id"]) // soft-delete
 	// Response
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
