@@ -1,7 +1,6 @@
-## Todolist REST API
----
+# Todolist REST API
 
-### Introduction
+## Introduction
 
 This software was written solely in Go and provides a simple REST API to manage ToDos with CRUD operations. For each ToDo different tasks can be added. The application supports basic auth with api key. Input JSON are validated and strings like name or description get sanitized before storage. For Storage Postgres is used. However, also another database can be used with only slight adjustment as database access is abstract with the GORM ORM that supports different relational databases.
 
@@ -12,11 +11,11 @@ This software was written solely in Go and provides a simple REST API to manage 
 - [Mux](https://github.com/gorilla/mux): As router gorilla mux is used.
 
 ## Installation
----
 
 The repository is already prepared for deployment on Heroku and different options are provided to run the todolist API locally.
 
-## Local
+### Local
+
 The Docker-Compose.yml, multi-stage Dockerfile, Visual Studio Code Workspace or just the go sources and module can be used to run the todolist REST API locally. Depending on which solution is chosen and your Postgres Settings please adjust the ```.env``` / ```Dockerfile``` file accordingly.
 
 1. #### Debug
@@ -61,6 +60,7 @@ The Docker-Compose.yml, multi-stage Dockerfile, Visual Studio Code Workspace or 
     Note: Please ensure that port 8000 is set when running the todolist image for local testing.
 
 ## Deployment
+
 The todolist REST API is already deployed on Heroku and reachable under the url provided in the todolist_heroku.postman_environment.json: https://todolist-koch.herokuapp.com
 
 The following steps are necessary to deploy the todolist on Heroku yourself:
@@ -80,11 +80,11 @@ The deployment is started automatically by pushing the repository to the git of 
 Note: The heroku.yml also allows to define a realease phase. The release phase allows testing your docker build before deployment. If the test in the release phase fails the docker container will not be deployed. For future version a release phase could be added to further improve the deployment process.
 
 ## Testing
----
 
 The unittest in routes_test.go can be used for local testing or in the release stage of deployment. Additionally a postman collection is provided that can be used to test the local installation or the deployed endpoint in the release phase or in production.
 
 ### 1. Unittest
+
 The unittest allows quick testing of the provided golang code during development and automatic testing during deployment. With the provided Visual Studio Workspace it is also possible to debug the unittest.
 
 Currently routes_test.go runs 58 tests that cover most parts of the software. In the future further tests can be added to also trigger some of the more specific error cases. To get a detailed overview of the code coverage please run:
@@ -219,7 +219,8 @@ coverage: 78.2% of statements
 ok  	todolist	0.916s
 ```
 
-### 1. Postman
+### 2. Postman
+
 A Postman collection is provided to test the endpoints. The Postman collection allows to test the todolist REST API locally, as well as in the release stage or in production by adjusting the ```domain``` Postman environment variable. For testing over the command line install Newman. Newman also allows automated testing.
 
 Note: The ```key``` Postman collection variable must match with the .env file and the heroku.yml / Dockerfile. The ```domain``` Postman environment variable must match with the domain of the corresponding todolist REST API!
@@ -258,19 +259,20 @@ Example Newman Output:
 │ average response time: 28ms [min: 10ms, max: 98ms, s.d.: 21ms] │
 └────────────────────────────────────────────────────────────────┘
 ```
+
 ## Controllers / Routes
----
+
 Todolist REST API Controllers / Routes.
 
 Note: All Routes expect an api key for basic auth. The api key can be configured in the ```TODOLIST_API_KEY``` env variable. For future version a list of api keys could be implemented. However, this would also require an additional API to provide and manage the API KEYs for different clients.
 
-## GET index
+### GET index
 ```
 GET /
 ```
 Soft redirect to GET /todos
 
-## GET todos
+### GET todos
 ```
 GET /todos
 ```
@@ -346,7 +348,7 @@ Example response JSON:
 ]
 ```
 
-## POST todos
+### POST todos
 ```
 POST /todos
 ```
@@ -420,7 +422,7 @@ Example response JSON:
 }
 ```
 
-## GET todo
+### GET todo
 ```
 GET /todos/{id}
 ```
@@ -462,7 +464,7 @@ Example response JSON:
 }
 ```
 
-## PUT todo
+### PUT todo
 ```
 PUT /todos/{id}
 ```
@@ -529,7 +531,7 @@ Example response JSON:
 }
 ```
 
-## DELETE todo
+### DELETE todo
 ```
 DELETE /todos/{id}
 ```
@@ -578,7 +580,7 @@ Example response JSON:
 }
 ```
 
-## DELETE todos
+### DELETE todos
 ```
 DELETE /todos/{id}
 ```
