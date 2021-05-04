@@ -12,7 +12,7 @@ This software was written solely in Go and provides a simple REST API to manage 
 
 ## Installation
 
-The repository is already prepared for deployment on Heroku and different options are provided to run the todolist API locally.
+The repository is already prepared for deployment on Heroku and provides different options to run the todolist API locally.
 
 ### Local
 
