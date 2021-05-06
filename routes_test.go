@@ -108,6 +108,8 @@ func Test_Router(t *testing.T) {
 		{name: "GET /todos", input: TestInput{method: http.MethodGet, path: "/todos"}, output: TestOutput{status: http.StatusOK}},
 		{name: "POST /todos (add todo ignore unknown key)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":"check upwards compatibility","unknown unknowns":"ignore until update"}`}, output: TestOutput{status: http.StatusOK}},
 		{name: "POST /todos (add todo with name only)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":"check post with name only"}`}, output: TestOutput{status: http.StatusOK}},
+		{name: "POST /todos (add todo with name empty)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":""}`}, output: TestOutput{status: http.StatusBadRequest}},
+		{name: "POST /todos (add todo with long name)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"name":"pretty pretty loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooonnnng name"}`}, output: TestOutput{status: http.StatusBadRequest}},
 		{name: "POST /todos (add todo and ignore id string)", input: TestInput{method: http.MethodPost, path: "/todos", content: `{"id":"100","name":"check post with name only"}`}, output: TestOutput{status: http.StatusOK}},
 		{name: "POST /todos (bad request with id 1941041)", input: TestInput{method: http.MethodPost, path: "/todos", content: json_todo_1941041_post}, output: TestOutput{status: http.StatusBadRequest}},
 		{name: "POST /todos (bad request without JSON)", input: TestInput{method: http.MethodPost, path: "/todos"}, output: TestOutput{status: http.StatusBadRequest}},
